@@ -73,24 +73,25 @@ def get_api_answer(current_timestamp):
 
 def check_response(response):
     """Проверка ответа."""
-    if type(response) is not dict:
+    if not isinstance(response, dict):
         raise TypeError('Не соответствует формат')
     if 'homeworks' not in response:
         raise KeyError('Нет ответа от домашней работы')
     homeworks = response['homeworks']
-    if type(homeworks) is not list:
+    if not isinstance(homeworks, list):
         raise TypeError('Нет домашних работ в списке')
-    return response.get('homeworks')
+    if isinstance(homeworks[0], dict):
+        return response.get('homeworks')
 
 
 def parse_status(homework):
     """Парсинг статуса."""
-    homework_name = homework['homework_name']
-    homework_status = homework['status']
     if 'homework_name' not in homework:
         raise KeyError('Домашней работы нет в списке')
     if 'status' not in homework:
         raise Exception('Отсутствует ключ "status" в ответе API')
+    homework_name = homework['homework_name']
+    homework_status = homework['status']
     if homework_status not in HOMEWORK_STATUSES:
         raise Exception(f'Ошибка статуса: {homework_status}')
     verdict = HOMEWORK_STATUSES[homework_status]
@@ -98,7 +99,7 @@ def parse_status(homework):
 
 
 def check_tokens():
-    """Проверка токенов."""
+    """Проверка токенов"""
     if all([PRACTICUM_TOKEN, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID]):
         return True
 
@@ -114,15 +115,18 @@ def main() -> None:
         try:
             response = get_api_answer(current_timestamp)
             homework = check_response(response)
-            if homework:
-                message = parse_status(homework)
-                if message != current_error:
-                    current_error = message
-                    send_message(bot, message)
+            message = parse_status(homework[0])
+            if message != current_error:
+                send_message(bot, message)
+            current_error = message
         except Exception as error:
+            # Я не нашёл способа обратиться к предыдущему сообщению от бота
+            # немного переписал код выше, чтобы попробовать убрать ошибку
+            # бот присылает вот это: "Сбой в работе программы:
+            # list indices must be integers or slices, not str"
             message = f'Сбой в работе программы: {error}'
-            send_message(bot, message)
             logger.error(message)
+            send_message(bot, message)
         finally:
             current_timestamp = int(time.time())
             time.sleep(RETRY_TIME)
