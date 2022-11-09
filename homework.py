@@ -99,7 +99,7 @@ def parse_status(homework):
 
 
 def check_tokens():
-    """Проверка токенов"""
+    """Проверка токенов."""
     if all([PRACTICUM_TOKEN, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID]):
         return True
 
