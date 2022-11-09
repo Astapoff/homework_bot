@@ -40,7 +40,7 @@ HOMEWORK_STATUSES = {
 
 
 def send_message(bot, message):
-    """Отправить сообщение в чат"""
+    """Отправить сообщение в чат."""
     try:
         bot.send_message(TELEGRAM_CHAT_ID, message)
         logger.info('Сообщение в чат {TELEGRAM_CHAT_ID}: {message}')
@@ -49,7 +49,7 @@ def send_message(bot, message):
 
 
 def get_api_answer(current_timestamp):
-    """Получить статус домашней работы от сервера"""
+    """Получить статус домашней работы от сервера."""
     timestamp = current_timestamp or int(time.time())
     params = {'from_date': timestamp}
     try:
@@ -72,7 +72,7 @@ def get_api_answer(current_timestamp):
 
 
 def check_response(response):
-    """Проверка ответа"""
+    """Проверка ответа."""
     if type(response) is not dict:
         raise TypeError('Не соответствует формат')
     if 'homeworks' not in response:
@@ -84,7 +84,7 @@ def check_response(response):
 
 
 def parse_status(homework):
-    """Парсинг статуса"""
+    """Парсинг статуса."""
     homework_name = homework['homework_name']
     homework_status = homework['status']
     if 'homework_name' not in homework:
@@ -98,7 +98,7 @@ def parse_status(homework):
 
 
 def check_tokens():
-    """Проверка токенов"""
+    """Проверка токенов."""
     if all([PRACTICUM_TOKEN, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID]):
         return True
 
