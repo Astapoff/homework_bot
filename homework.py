@@ -80,12 +80,11 @@ def check_response(response):
     homeworks = response['homeworks']
     if not isinstance(homeworks, list):
         raise TypeError('Нет домашних работ в списке')
-    if not isinstance(homeworks[0], dict):
-        raise TypeError('Ошибка формата')
     if not homeworks:
         raise TypeError('Пустая домашка')
+    if not isinstance(homeworks[0], dict):
+        raise TypeError('Ошибка формата')
     return response.get('homeworks')
-# Я совсем запутался...
 
 
 def parse_status(homework):
@@ -119,16 +118,23 @@ def main() -> None:
         try:
             response = get_api_answer(current_timestamp)
             homework = check_response(response)
+            # Получаем сообщение со статусом др
             message = parse_status(homework[0])
+            # Если оно не пустое, отправляем
             if message != current_error:
                 send_message(bot, message)
+            # записываем, что отправили - последнее сообщение
             current_error = message
         except Exception as error:
-            # Что можно дополнительно почитать на эту тему?
+            # создаем сообщение об ошибке
             message = f'Сбой в работе программы: {error}'
+            # логгируем его
             logger.error(message)
+            # если сообщение не равно предыдущему, отправляем
             if current_error != message:
                 send_message(bot, message)
+                # перезаписываем
+                current_error = message
         finally:
             current_timestamp = int(time.time())
             time.sleep(RETRY_TIME)
