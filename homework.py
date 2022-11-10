@@ -82,8 +82,10 @@ def check_response(response):
         raise TypeError('Нет домашних работ в списке')
     if not isinstance(homeworks[0], dict):
         raise TypeError('Ошибка формата')
-    if homeworks and isinstance(homeworks[0], dict):
-        return response.get('homeworks')
+    if not homeworks:
+        raise TypeError('Пустая домашка')
+    return response.get('homeworks')
+# Я совсем запутался...
 
 
 def parse_status(homework):
@@ -122,10 +124,10 @@ def main() -> None:
                 send_message(bot, message)
             current_error = message
         except Exception as error:
-            previous_message = message
+            # Что можно дополнительно почитать на эту тему?
             message = f'Сбой в работе программы: {error}'
             logger.error(message)
-            if previous_message != message:
+            if current_error != message:
                 send_message(bot, message)
         finally:
             current_timestamp = int(time.time())
