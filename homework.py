@@ -80,7 +80,9 @@ def check_response(response):
     homeworks = response['homeworks']
     if not isinstance(homeworks, list):
         raise TypeError('Нет домашних работ в списке')
-    if isinstance(homeworks[0], dict):
+    if not isinstance(homeworks[0], dict):
+        raise TypeError('Ошибка формата')
+    if homeworks and isinstance(homeworks[0], dict):
         return response.get('homeworks')
 
 
@@ -120,13 +122,11 @@ def main() -> None:
                 send_message(bot, message)
             current_error = message
         except Exception as error:
-            # Я не нашёл способа обратиться к предыдущему сообщению от бота
-            # немного переписал код выше, чтобы попробовать убрать ошибку
-            # бот присылает вот это: "Сбой в работе программы:
-            # list indices must be integers or slices, not str"
+            previous_message = message
             message = f'Сбой в работе программы: {error}'
             logger.error(message)
-            send_message(bot, message)
+            if previous_message != message:
+                send_message(bot, message)
         finally:
             current_timestamp = int(time.time())
             time.sleep(RETRY_TIME)
