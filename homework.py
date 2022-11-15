@@ -113,29 +113,19 @@ def main() -> None:
         raise ValueError('Отсутствует токен')
     bot = telegram.Bot(token=TELEGRAM_TOKEN)
     current_timestamp = int(time.time())
-    current_error = ''
+    last_message = ''
     while True:
         try:
             response = get_api_answer(current_timestamp)
             homework = check_response(response)
-            # Получаем сообщение со статусом др
             message = parse_status(homework[0])
-            # Если оно не пустое, отправляем
-            if message != current_error:
-                send_message(bot, message)
-            # записываем, что отправили - последнее сообщение
-            current_error = message
         except Exception as error:
-            # создаем сообщение об ошибке
             message = f'Сбой в работе программы: {error}'
-            # логгируем его
             logger.error(message)
-            # если сообщение не равно предыдущему, отправляем
-            if current_error != message:
-                send_message(bot, message)
-                # перезаписываем
-                current_error = message
         finally:
+            if last_message != message:
+                send_message(bot, message)
+                last_message = message
             current_timestamp = int(time.time())
             time.sleep(RETRY_TIME)
 
