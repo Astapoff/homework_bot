@@ -121,6 +121,9 @@ def main() -> None:
             message = parse_status(homework[0])
         except Exception as error:
             message = f'Сбой в работе программы: {error}'
+            if last_message != message:
+                send_message(bot, message)
+                last_message = message
             logger.error(message)
         finally:
             if last_message != message:
