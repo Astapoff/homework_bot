@@ -80,8 +80,8 @@ def check_response(response):
     homeworks = response['homeworks']
     if not isinstance(homeworks, list):
         raise TypeError('Нет домашних работ в списке')
-    if not homeworks:
-        raise TypeError('Пустая домашка')
+    # if not homeworks:
+        # raise TypeError('Пустая домашка')
     if not isinstance(homeworks[0], dict):
         raise TypeError('Ошибка формата')
     return response.get('homeworks')
@@ -121,9 +121,6 @@ def main() -> None:
             message = parse_status(homework[0])
         except Exception as error:
             message = f'Сбой в работе программы: {error}'
-            if last_message != message:
-                send_message(bot, message)
-                last_message = message
             logger.error(message)
         finally:
             if last_message != message:
