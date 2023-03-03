@@ -80,8 +80,8 @@ def check_response(response):
     homeworks = response['homeworks']
     if not isinstance(homeworks, list):
         raise TypeError('Нет домашних работ в списке')
-    # if not homeworks:
-        # raise TypeError('Пустая домашка')
+    if not homeworks:
+        raise TypeError('Пустая домашка')
     if not isinstance(homeworks[0], dict):
         raise TypeError('Ошибка формата')
     return response.get('homeworks')
